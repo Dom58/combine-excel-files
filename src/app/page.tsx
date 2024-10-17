@@ -1,6 +1,5 @@
 "use client"
 
-// pages/upload.tsx
 import { useState } from 'react';
 import * as XLSX from 'xlsx';
 import Papa from 'papaparse';
@@ -19,6 +18,9 @@ export default function UploadPage() {
   const [hiddenColumns, setHiddenColumns] = useState<string[]>([]);
   const [combinedData, setCombinedData] = useState<DataRow[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  
+  const [isFileOneVisible, setFileOneVisible] = useState(false);
+  const [isFileTwoVisible, setFileTwoVisible] = useState(false);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>, fileSetter: (file: File | null) => void) => {
     const file = event.target.files?.[0] || null;
@@ -171,15 +173,25 @@ export default function UploadPage() {
       <div className="flex space-x-4 mt-8">
         {dataFileOne.length > 0 && (
           <div className="w-1/2">
-            <h2 className="text-xl font-semibold mb-2">File One Data:</h2>
-            {renderTable(dataFileOne, [])} {/* Do not hide any columns */}
+            <h2 className="text-xl font-semibold mb-2 flex justify-between items-center">
+              File One Data:
+              <button onClick={() => setFileOneVisible(!isFileOneVisible)} className="text-blue-500">
+                {isFileOneVisible ? 'Collapse' : 'Expand'}
+              </button>
+            </h2>
+            {isFileOneVisible && renderTable(dataFileOne, [])} {/* Show data based on state */}
           </div>
         )}
 
         {dataFileTwo.length > 0 && (
           <div className="w-1/2">
-            <h2 className="text-xl font-semibold mb-2">File Two Data:</h2>
-            {renderTable(dataFileTwo, [])} {/* Do not hide any columns */}
+            <h2 className="text-xl font-semibold mb-2 flex justify-between items-center">
+              File Two Data:
+              <button onClick={() => setFileTwoVisible(!isFileTwoVisible)} className="text-blue-500">
+                {isFileTwoVisible ? 'Collapse' : 'Expand'}
+              </button>
+            </h2>
+            {isFileTwoVisible && renderTable(dataFileTwo, [])} {/* Show data based on state */}
           </div>
         )}
       </div>
