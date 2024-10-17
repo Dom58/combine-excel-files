@@ -9,6 +9,10 @@
 # testing
 /coverage
 
+# pnm & env
+pnpm-lock.yaml 
+.env
+
 # next.js
 /.next/
 /out/
@@ -34,3 +38,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+#
+bun.lockb
+.env
+pnpm-lock.yaml
+package-lock.json
+yarn-lock.json
+certificates
+yarn.lock
