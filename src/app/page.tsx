@@ -120,12 +120,12 @@ export default function UploadPage() {
     link.click();
   };
 
-  const renderTable = (data: DataRow[]) => (
+  const renderTable = (data: DataRow[], hideColumns: string[]) => (
     <table className="table-auto w-full border-collapse border border-gray-300">
       <thead>
         <tr>
           {Object.keys(data[0] || {}).map((key) => (
-            !hiddenColumns.includes(key) && (
+            !hideColumns.includes(key) && (
               <th key={key} className="border border-gray-300 px-4 py-2">{key}</th>
             )
           ))}
@@ -135,7 +135,7 @@ export default function UploadPage() {
         {data.map((row, index) => (
           <tr key={index}>
             {Object.values(row).map((value, i) => (
-              !hiddenColumns.includes(Object.keys(row)[i]) && (
+              !hideColumns.includes(Object.keys(row)[i]) && (
                 <td key={i} className="border border-gray-300 px-4 py-2">{value}</td>
               )
             ))}
@@ -172,14 +172,14 @@ export default function UploadPage() {
         {dataFileOne.length > 0 && (
           <div className="w-1/2">
             <h2 className="text-xl font-semibold mb-2">File One Data:</h2>
-            {renderTable(dataFileOne)}
+            {renderTable(dataFileOne, [])} {/* Do not hide any columns */}
           </div>
         )}
 
         {dataFileTwo.length > 0 && (
           <div className="w-1/2">
             <h2 className="text-xl font-semibold mb-2">File Two Data:</h2>
-            {renderTable(dataFileTwo)}
+            {renderTable(dataFileTwo, [])} {/* Do not hide any columns */}
           </div>
         )}
       </div>
@@ -246,7 +246,7 @@ export default function UploadPage() {
       {combinedData.length > 0 && (
         <div className="mt-8">
           <h2 className="text-xl font-semibold mb-2">Combined Data:</h2>
-          {renderTable(combinedData)}
+          {renderTable(combinedData, hiddenColumns)} {/* Pass hiddenColumns only for Combined Data */}
 
           <div className="mt-4">
             <button
