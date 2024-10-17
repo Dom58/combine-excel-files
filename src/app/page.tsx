@@ -8,10 +8,11 @@ import Papa from 'papaparse';
 export default function UploadPage() {
   const [fileOne, setFileOne] = useState<File | null>(null);
   const [fileTwo, setFileTwo] = useState<File | null>(null);
-  const [dataFileOne, setDataFileOne] = useState<any[]>([]); // Data from file one
-  const [dataFileTwo, setDataFileTwo] = useState<any[]>([]); // Data from file two
-  const [columns, setColumns] = useState<string[]>([]); // Columns from file one
-  const [selectedColumns, setSelectedColumns] = useState<string[]>([]); // User's choice
+  const [dataFileOne, setDataFileOne] = useState<any[]>([]);
+  const [dataFileTwo, setDataFileTwo] = useState<any[]>([]);
+  const [columns, setColumns] = useState<string[]>([]);
+  const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
+  const [hiddenColumns, setHiddenColumns] = useState<string[]>([]); // Columns to hide in combined data
   const [combinedData, setCombinedData] = useState<any[]>([]);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>, fileSetter: (file: File | null) => void) => {
@@ -45,24 +46,18 @@ export default function UploadPage() {
   const handleProcessFiles = async () => {
     if (!fileOne || !fileTwo) return alert('Please upload both files.');
 
-    // Parse both files
     const dataFileOne = fileOne.name.endsWith('.csv') ? await parseCSV(fileOne) : await parseExcel(fileOne);
     const dataFileTwo = fileTwo.name.endsWith('.csv') ? await parseCSV(fileTwo) : await parseExcel(fileTwo);
 
-    // Set data for preview
     setDataFileOne(dataFileOne);
     setDataFileTwo(dataFileTwo);
-
-    // Get unique columns from file one for user to select
     setColumns(Object.keys(dataFileOne[0]));
   };
 
-  // Combine data
   const handleCombineData = () => {
     const mergedData = dataFileTwo.map((rowTwo) => {
       const matchingRowOne = dataFileOne.find((rowOne) => rowOne['chassin'] === rowTwo['chassin']);
       if (matchingRowOne) {
-        // Add all selected columns from file one to file two
         selectedColumns.forEach((col) => {
           rowTwo[col] = matchingRowOne[col];
         });
@@ -73,7 +68,6 @@ export default function UploadPage() {
     setCombinedData(mergedData);
   };
 
-  // Export as Excel (.xlsx)
   const exportAsExcel = () => {
     const worksheet = XLSX.utils.json_to_sheet(combinedData);
     const workbook = XLSX.utils.book_new();
@@ -81,7 +75,6 @@ export default function UploadPage() {
     XLSX.writeFile(workbook, 'combined_data.xlsx');
   };
 
-  // Export as CSV
   const exportAsCSV = () => {
     const csv = Papa.unparse(combinedData);
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -92,13 +85,14 @@ export default function UploadPage() {
     link.click();
   };
 
-  // Preview data in table format
   const renderTable = (data: any[]) => (
     <table className="table-auto w-full border-collapse border border-gray-300">
       <thead>
         <tr>
           {Object.keys(data[0] || {}).map((key) => (
-            <th key={key} className="border border-gray-300 px-4 py-2">{key}</th>
+            !hiddenColumns.includes(key) && (
+              <th key={key} className="border border-gray-300 px-4 py-2">{key}</th>
+            )
           ))}
         </tr>
       </thead>
@@ -106,7 +100,9 @@ export default function UploadPage() {
         {data.map((row, index) => (
           <tr key={index}>
             {Object.values(row).map((value, i) => (
-              <td key={i} className="border border-gray-300 px-4 py-2">{value}</td>
+              !hiddenColumns.includes(Object.keys(row)[i]) && (
+                <td key={i} className="border border-gray-300 px-4 py-2">{value}</td>
+              )
             ))}
           </tr>
         ))}
@@ -135,7 +131,6 @@ export default function UploadPage() {
         Preview Files
       </button>
 
-      {/* Inline preview of both files */}
       <div className="flex space-x-4 mt-8">
         {dataFileOne.length > 0 && (
           <div className="w-1/2">
@@ -167,6 +162,32 @@ export default function UploadPage() {
                       setSelectedColumns([...selectedColumns, col]);
                     } else {
                       setSelectedColumns(selectedColumns.filter(c => c !== col));
+                    }
+                  }}
+                  className="mr-2"
+                />
+                <label className="text-gray-700">{col}</label>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {combinedData.length > 0 && (
+        <div className="mb-4 mt-4">
+          <label className="block mb-2 font-semibold">Choose a column to hide in Combined Data</label>
+          <div className="space-y-2">
+            {Object.keys(combinedData[0] || {}).map((col) => (
+              <div key={col} className="flex items-center">
+                <input
+                  type="checkbox"
+                  value={col}
+                  checked={hiddenColumns.includes(col)}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setHiddenColumns([...hiddenColumns, col]);
+                    } else {
+                      setHiddenColumns(hiddenColumns.filter(c => c !== col));
                     }
                   }}
                   className="mr-2"
