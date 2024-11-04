@@ -149,7 +149,8 @@ export default function UploadPage() {
 
   return (
     <div className="container mx-auto p-8">
-      <h1 className="text-2xl font-bold mb-10">Data Visualization</h1>
+      <h1 className="text-4xl font-bold mb-10">Data Manipulation</h1>
+      <hr className=" dark:border-gray-700 mb-4" />
       <h1 className="text-md font-bold mb-4">Upload and Combine Two(2) Excel/CSV Files</h1>
 
       {isLoading && <p>Loading...</p>}
@@ -206,7 +207,7 @@ export default function UploadPage() {
                   {isFileOneVisible ? 'Collapse' : 'Expand'}
                 </button>
               </h2>
-              {isFileOneVisible && renderTable(dataFileOne, [])} {/* Show data based on state */}
+              {isFileOneVisible && renderTable(dataFileOne, [])}
             </div>
           )}
 
@@ -218,16 +219,16 @@ export default function UploadPage() {
                   {isFileTwoVisible ? 'Collapse' : 'Expand'}
                 </button>
               </h2>
-              {isFileTwoVisible && renderTable(dataFileTwo, [])} {/* Show data based on state */}
+              {isFileTwoVisible && renderTable(dataFileTwo, [])}
             </div>
           )}
         </div>
       )}
 
-      <div className='flex justify-between'>
+      <div className={`flex space-x-20 ${(!!columns.length || !!combinedData.length) ? 'border' : ''} px-10`}>
         {columns.length > 0 && (
           <div className="mb-4 mt-4">
-            <label className="block mb-2 font-semibold">Choose columns from File One to add to File Two</label>
+            <label className="block mb-2 font-semibold">Choose the columns from file One to add to the file Two</label>
             <div className="space-y-2">
               {columns.map((col) => (
                 <div key={col} className="flex items-center">
@@ -253,7 +254,7 @@ export default function UploadPage() {
 
         {combinedData.length > 0 && (
           <div className="mb-4 mt-4">
-            <label className="block mb-2 font-semibold">Choose a column to hide in Combined Data</label>
+            <label className="block mb-2 text-[#4c9649] font-semibold">Choose the columns to hide in combined data</label>
             <div className="space-y-2">
               {Object.keys(combinedData[0] || {}).map((col) => (
                 <div key={col} className="flex items-center">
@@ -268,7 +269,7 @@ export default function UploadPage() {
                         setHiddenColumns(hiddenColumns.filter(c => c !== col));
                       }
                     }}
-                    className="mr-2 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
+                    className="mr-2 w-4 h-4 text-[blue-600] bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
                   />
                   <label className="text-white">
                     {col}
@@ -282,29 +283,29 @@ export default function UploadPage() {
 
       {combinedData.length > 0 && (
         <div className="mt-8">
-          <h2 className="text-xl font-semibold mb-2">Combined Data:</h2>
-          {renderTable(combinedData, hiddenColumns)}
-
-          <div className="mt-4">
-            <button
-              onClick={exportAsExcel}
-              className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mr-4"
-            >
-              Export as Excel
-            </button>
-            <button
-              onClick={exportAsCSV}
-              className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
-            >
-              Export as CSV
-            </button>
+          <h2 className="text-xl font-semibold mb-2">Combined Data:</h2><div className="mt-4">
+            <div className='my-4  flex flex-row justify-end'>
+              <button
+                onClick={exportAsExcel}
+                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mr-4"
+              >
+                Export as Excel
+              </button>
+              <button
+                onClick={exportAsCSV}
+                className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
+              >
+                Export as CSV
+              </button>
+            </div>
           </div>
+          {renderTable(combinedData, hiddenColumns)}
         </div>
       )}
 
       <footer className="rounded-lg shado">
         <div className="w-full max-w-screen-xl mx-auto md:py-8">
-          <hr className="my-6sm:mx-auto dark:border-gray-700 lg:my-8" />
+          <hr className="my-6 sm:mx-auto dark:border-gray-700 lg:my-8" />
           <span className="block text-sm text-gray-500 dark:text-gray-400">
             © 2024 <a href="https://dom58.github.io/dom58.me" className=" text-green-500 hover:underline">Dom58</a>. All Rights Reserved.
           </span>
