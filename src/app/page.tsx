@@ -180,7 +180,7 @@ export default function UploadPage() {
         {(!!fileOne || !!fileTwo) && (
           <button
             onClick={handleProcessFiles}
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mr-4"
+            className="bg-[#4271a7] text-white px-4 py-2 rounded hover:bg-blue-600 mr-4"
           >
             Preview Files
           </button>
@@ -189,38 +189,40 @@ export default function UploadPage() {
         {dataFileOne.length > 0 && dataFileTwo.length > 0 && (
           <button
             onClick={handleCombineData}
-            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mr-4"
+            className="bg-[#4c9649] text-white px-4 py-2 rounded hover:bg-green-600 mr-4"
           >
             Combine Files
           </button>
         )}
       </div>
 
-      <div className="flex space-x-4 mt-8">
-        {dataFileOne.length > 0 && (
-          <div className="w-1/2">
-            <h2 className="text-xl font-semibold mb-2 flex justify-between items-center">
-              File One Data:
-              <button onClick={() => setFileOneVisible(!isFileOneVisible)} className="text-blue-500">
-                {isFileOneVisible ? 'Collapse' : 'Expand'}
-              </button>
-            </h2>
-            {isFileOneVisible && renderTable(dataFileOne, [])} {/* Show data based on state */}
-          </div>
-        )}
+      {dataFileOne.length > 0 && dataFileTwo.length > 0 && (
+        <div className="flex space-x-4 mt-8 border p-4 mb-10">
+          {dataFileOne.length > 0 && (
+            <div className="w-1/2">
+              <h2 className="text-xl font-semibold mb-2 flex items-center">
+                File One Data:
+                <button onClick={() => setFileOneVisible(!isFileOneVisible)} className="text-[#4271a7] px-4">
+                  {isFileOneVisible ? 'Collapse' : 'Expand'}
+                </button>
+              </h2>
+              {isFileOneVisible && renderTable(dataFileOne, [])} {/* Show data based on state */}
+            </div>
+          )}
 
-        {dataFileTwo.length > 0 && (
-          <div className="w-1/2">
-            <h2 className="text-xl font-semibold mb-2 flex justify-between items-center">
-              File Two Data:
-              <button onClick={() => setFileTwoVisible(!isFileTwoVisible)} className="text-blue-500">
-                {isFileTwoVisible ? 'Collapse' : 'Expand'}
-              </button>
-            </h2>
-            {isFileTwoVisible && renderTable(dataFileTwo, [])} {/* Show data based on state */}
-          </div>
-        )}
-      </div>
+          {dataFileTwo.length > 0 && (
+            <div className="w-1/2">
+              <h2 className="text-xl font-semibold mb-2 flex items-center">
+                File Two Data:
+                <button onClick={() => setFileTwoVisible(!isFileTwoVisible)} className="text-[#4c9649] px-4">
+                  {isFileTwoVisible ? 'Collapse' : 'Expand'}
+                </button>
+              </h2>
+              {isFileTwoVisible && renderTable(dataFileTwo, [])} {/* Show data based on state */}
+            </div>
+          )}
+        </div>
+      )}
 
       <div className='flex justify-between'>
         {columns.length > 0 && (
@@ -240,9 +242,9 @@ export default function UploadPage() {
                         setSelectedColumns(selectedColumns.filter(c => c !== col));
                       }
                     }}
-                    className="mr-2"
+                    className="mr-2 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
                   />
-                  <label className="text-gray-700">{col}</label>
+                  <label className="text-white">{col}</label>
                 </div>
               ))}
             </div>
@@ -266,9 +268,11 @@ export default function UploadPage() {
                         setHiddenColumns(hiddenColumns.filter(c => c !== col));
                       }
                     }}
-                    className="mr-2"
+                    className="mr-2 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
                   />
-                  <label className="text-gray-700">{col}</label>
+                  <label className="text-white">
+                    {col}
+                  </label>
                 </div>
               ))}
             </div>
@@ -279,7 +283,7 @@ export default function UploadPage() {
       {combinedData.length > 0 && (
         <div className="mt-8">
           <h2 className="text-xl font-semibold mb-2">Combined Data:</h2>
-          {renderTable(combinedData, hiddenColumns)} {/* Pass hiddenColumns only for Combined Data */}
+          {renderTable(combinedData, hiddenColumns)}
 
           <div className="mt-4">
             <button
@@ -298,11 +302,12 @@ export default function UploadPage() {
         </div>
       )}
 
-      <footer className="rounded-lg shado m-4">
-        <div className="w-full max-w-screen-xl mx-auto p-4 md:py-8">
+      <footer className="rounded-lg shado">
+        <div className="w-full max-w-screen-xl mx-auto md:py-8">
           <hr className="my-6sm:mx-auto dark:border-gray-700 lg:my-8" />
-          <span className="block text-sm text-gray-500 sm:text-center dark:text-gray-400">
-            © 2024 <a href="https://dom58.github.io/dom58.me" className=" text-green-500 hover:underline">Dom58</a>. All Rights Reserved.</span>
+          <span className="block text-sm text-gray-500 dark:text-gray-400">
+            © 2024 <a href="https://dom58.github.io/dom58.me" className=" text-green-500 hover:underline">Dom58</a>. All Rights Reserved.
+          </span>
         </div>
       </footer>
     </div>
