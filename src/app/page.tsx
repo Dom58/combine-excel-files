@@ -18,7 +18,7 @@ export default function UploadPage() {
   const [hiddenColumns, setHiddenColumns] = useState<string[]>([]);
   const [combinedData, setCombinedData] = useState<DataRow[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const [isFileOneVisible, setFileOneVisible] = useState(false);
   const [isFileTwoVisible, setFileTwoVisible] = useState(false);
 
@@ -46,7 +46,7 @@ export default function UploadPage() {
     return new Promise((resolve, reject) => {
       Papa.parse(file, {
         header: true,
-        complete: (results) => resolve(results.data as DataRow[]),
+        complete: (results: any) => resolve(results.data as DataRow[]),
         error: () => reject(new Error('Error reading CSV file')),
       });
     });
@@ -149,26 +149,52 @@ export default function UploadPage() {
 
   return (
     <div className="container mx-auto p-8">
-      <h1 className="text-2xl font-bold mb-4">Upload and Combine Excel/CSV Files</h1>
-      
+      <h1 className="text-2xl font-bold mb-10">Data Visualization</h1>
+      <h1 className="text-md font-bold mb-4">Upload and Combine Two(2) Excel/CSV Files</h1>
+
       {isLoading && <p>Loading...</p>}
 
-      <div className="mb-4">
-        <label className="block mb-2 font-semibold">Upload File One</label>
-        <input type="file" accept=".xlsx,.csv" onChange={(e) => handleFileUpload(e, setFileOne)} />
+      <div className='flex p-4 mb-6'>
+        <div className="mb-4 border p-10 bg-[#4271a7] hover:bg-[#305c8f]">
+          <label className="block mb-2 font-semibold">Upload File One</label>
+          <input
+            type="file"
+            accept=".xlsx,.csv"
+            onChange={(e) => handleFileUpload(e, setFileOne)}
+            className='focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-white block w-full text-sm file:rounded-full file:border-0 file:text-sm file:bg-teal-1000 file:text-black hover:file:bg-teal-300 hover:file:text-black hover:file:cursor-pointer'
+          />
+        </div>
+
+        <div className="mb-4 border p-10 bg-[#4c9649] hover:bg-[#328d2f]">
+          <label className="block mb-2 font-semibold">Upload File Two</label>
+          <input
+            type="file"
+            accept=".xlsx,.csv"
+            onChange={(e) => handleFileUpload(e, setFileTwo)}
+            className='focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-white block w-full text-sm file:rounded-full file:border-0 file:text-sm file:bg-teal-1000 file:text-black hover:file:bg-teal-300 hover:file:text-black hover:file:cursor-pointer'
+          />
+        </div>
       </div>
 
-      <div className="mb-4">
-        <label className="block mb-2 font-semibold">Upload File Two</label>
-        <input type="file" accept=".xlsx,.csv" onChange={(e) => handleFileUpload(e, setFileTwo)} />
-      </div>
+      <div className='flex'>
+        {(!!fileOne || !!fileTwo) && (
+          <button
+            onClick={handleProcessFiles}
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mr-4"
+          >
+            Preview Files
+          </button>
+        )}
 
-      <button
-        onClick={handleProcessFiles}
-        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mr-4"
-      >
-        Preview Files
-      </button>
+        {dataFileOne.length > 0 && dataFileTwo.length > 0 && (
+          <button
+            onClick={handleCombineData}
+            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mr-4"
+          >
+            Combine Files
+          </button>
+        )}
+      </div>
 
       <div className="flex space-x-4 mt-8">
         {dataFileOne.length > 0 && (
@@ -196,64 +222,59 @@ export default function UploadPage() {
         )}
       </div>
 
-      {columns.length > 0 && (
-        <div className="mb-4 mt-4">
-          <label className="block mb-2 font-semibold">Choose columns from File One to add to File Two</label>
-          <div className="space-y-2">
-            {columns.map((col) => (
-              <div key={col} className="flex items-center">
-                <input
-                  type="checkbox"
-                  value={col}
-                  checked={selectedColumns.includes(col)}
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      setSelectedColumns([...selectedColumns, col]);
-                    } else {
-                      setSelectedColumns(selectedColumns.filter(c => c !== col));
-                    }
-                  }}
-                  className="mr-2"
-                />
-                <label className="text-gray-700">{col}</label>
-              </div>
-            ))}
+      <div className='flex justify-between'>
+        {columns.length > 0 && (
+          <div className="mb-4 mt-4">
+            <label className="block mb-2 font-semibold">Choose columns from File One to add to File Two</label>
+            <div className="space-y-2">
+              {columns.map((col) => (
+                <div key={col} className="flex items-center">
+                  <input
+                    type="checkbox"
+                    value={col}
+                    checked={selectedColumns.includes(col)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setSelectedColumns([...selectedColumns, col]);
+                      } else {
+                        setSelectedColumns(selectedColumns.filter(c => c !== col));
+                      }
+                    }}
+                    className="mr-2"
+                  />
+                  <label className="text-gray-700">{col}</label>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {combinedData.length > 0 && (
-        <div className="mb-4 mt-4">
-          <label className="block mb-2 font-semibold">Choose a column to hide in Combined Data</label>
-          <div className="space-y-2">
-            {Object.keys(combinedData[0] || {}).map((col) => (
-              <div key={col} className="flex items-center">
-                <input
-                  type="checkbox"
-                  value={col}
-                  checked={hiddenColumns.includes(col)}
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      setHiddenColumns([...hiddenColumns, col]);
-                    } else {
-                      setHiddenColumns(hiddenColumns.filter(c => c !== col));
-                    }
-                  }}
-                  className="mr-2"
-                />
-                <label className="text-gray-700">{col}</label>
-              </div>
-            ))}
+        {combinedData.length > 0 && (
+          <div className="mb-4 mt-4">
+            <label className="block mb-2 font-semibold">Choose a column to hide in Combined Data</label>
+            <div className="space-y-2">
+              {Object.keys(combinedData[0] || {}).map((col) => (
+                <div key={col} className="flex items-center">
+                  <input
+                    type="checkbox"
+                    value={col}
+                    checked={hiddenColumns.includes(col)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setHiddenColumns([...hiddenColumns, col]);
+                      } else {
+                        setHiddenColumns(hiddenColumns.filter(c => c !== col));
+                      }
+                    }}
+                    className="mr-2"
+                  />
+                  <label className="text-gray-700">{col}</label>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
-
-      <button
-        onClick={handleCombineData}
-        className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mr-4"
-      >
-        Combine Files
-      </button>
+        )}
+      </div>
 
       {combinedData.length > 0 && (
         <div className="mt-8">
@@ -276,6 +297,14 @@ export default function UploadPage() {
           </div>
         </div>
       )}
+
+      <footer className="rounded-lg shado m-4">
+        <div className="w-full max-w-screen-xl mx-auto p-4 md:py-8">
+          <hr className="my-6sm:mx-auto dark:border-gray-700 lg:my-8" />
+          <span className="block text-sm text-gray-500 sm:text-center dark:text-gray-400">
+            © 2024 <a href="https://dom58.github.io/dom58.me" className=" text-green-500 hover:underline">Dom58</a>. All Rights Reserved.</span>
+        </div>
+      </footer>
     </div>
   );
 }
